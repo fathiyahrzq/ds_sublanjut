@@ -1,3 +1,4 @@
+import os
 import streamlit as st
 import pandas as pd
 import joblib
@@ -8,13 +9,19 @@ st.set_page_config(page_title="Jaya Jaya Institut - Deteksi Dropout", page_icon=
 # Menggunakan cache agar model dan data template tidak diload berulang kali
 @st.cache_resource
 def load_model():
-    return joblib.load('model.joblib')
+    # Mendapatkan direktori tempat file app.py ini berada
+    current_dir = os.path.dirname(__file__)
+    # Menggabungkan direktori dengan nama file model
+    model_path = os.path.join(current_dir, 'model.joblib')
+    return joblib.load(model_path)
 
 @st.cache_data
 def load_data_template():
-    # Membaca data untuk mendapatkan struktur kolom
-    df = pd.read_csv('data.csv', sep=';')
-    # Menghapus kolom target dari fitur
+    # Lakukan hal yang sama untuk data.csv agar tidak terjadi error serupa
+    current_dir = os.path.dirname(__file__)
+    data_path = os.path.join(current_dir, 'data.csv')
+    
+    df = pd.read_csv(data_path, sep=';')
     if 'Status' in df.columns:
         df = df.drop(['Status'], axis=1)
     if 'Status_Binary' in df.columns:
